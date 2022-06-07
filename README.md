@@ -23,4 +23,25 @@ Shoppers can decide on which product to buy when unsure if the product is the be
 
 - Front-End: React, HTML, SCSS, MUI, Axios,
 - Back-End: Node, Express, PostgreSQL, Knex Js
-- Testing: Cypress
+
+### Preview:
+
+#### Home Page
+
+![home page](https://github.com/amuliawijaya23/Amazonia/blob/main/Assets/Homepage.png?raw=true)
+
+#### Search For Products by Category
+
+![Set Category](https://github.com/amuliawijaya23/Amazonia/blob/main/Assets/category-selection.gif?raw=true)
+
+#### Search For Products by Image Submission
+
+![submit image](https://github.com/amuliawijaya23/Amazonia/blob/main/Assets/Image-submission.gif?raw=true)
+
+#### Wish List Page
+
+![Wishlist Page](https://github.com/amuliawijaya23/Amazonia/blob/main/Assets/wishlist-page.gif?raw=true)
+
+#### Sharable Wish List Page
+
+![Sharable Page](https://github.com/amuliawijaya23/Amazonia/blob/main/Assets/sharable-wish-link.gif?raw=true)
