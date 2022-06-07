@@ -27,14 +27,18 @@ export default function useApplicationData() {
   });
 
   useEffect(() => {
+
+    // check local storage for user information
     const loginUser = JSON.parse(window.localStorage.getItem("user"));
     const currentDate = new Date().getTime();
 
+    // check if cookie is still valid
     if (loginUser && (currentDate - loginUser.dateCreated) < 24 * 60 * 60 * 1000) {
       
+      // check local storage for stored wishlist
       const userWishes = JSON.parse(window.localStorage.getItem('wishList'));
 
-      if(userWishes) {      
+      if(userWishes) { // set category data and user wishlist if exist   
         axios.get(`api/categories?api_key=${process.env.REACT_APP_API_KEY}&domain=amazon.com`)  
           .then((response) => {
             dispatch({
@@ -44,6 +48,7 @@ export default function useApplicationData() {
           })
           .catch(error => console.error(error));
       } else {
+        // set category data and grab wishlist from database if it does not exist in local storage
         Promise.all([
           axios.get(`api/categories?api_key=${process.env.REACT_APP_API_KEY}&domain=amazon.com`),
           axios.get(`app/products/wishes/${loginUser.id}`)
@@ -58,8 +63,11 @@ export default function useApplicationData() {
       }
       return;
     };
+
+    // clear user data from local storage if cookie has expired (exceeds 24 hours)
     localStorage.removeItem('user');
 
+    // set category data
     axios.get(`api/categories?api_key=${process.env.REACT_APP_API_KEY}&domain=amazon.com`)
     .then((response) => {
         dispatch({
@@ -69,6 +77,7 @@ export default function useApplicationData() {
       });
     }, []);
   
+  // takes login information and returns user object if login credentials matches database
   const setUser = (input) => {
     return axios.post(`app/user/login`, input)
       .then((user) => {
@@ -85,7 +94,8 @@ export default function useApplicationData() {
       })
       .catch(error => console.error(error));
   };
-    
+  
+  // clear user state and local storage on sign out
   const signOut = () => {
     return axios.post('app/user/logout')
       .then(() => {
@@ -97,6 +107,7 @@ export default function useApplicationData() {
       });
   };
 
+  // get wish list for a specified user id
   const getWishList = () => {
     return axios.get(`app/products/wishes/${state.user.id}`)
       .then((response) => {
@@ -108,6 +119,7 @@ export default function useApplicationData() {
     .catch(error => console.error(error)); 
   };
 
+  // update position for wish items in database
   const updateList = (items) => {
     Promise.all([
       items.forEach((item, i) => {
@@ -122,13 +134,13 @@ export default function useApplicationData() {
     .catch(error => console.error(error));
   };
 
+  // add wish an item to your wishlist
   const addWish = (item) => {
     return axios.post(`app/products/wishes/${state.user.id}`, item)
       .then(() => {
         console.log('Added wish!');
         return axios.get(`app/products/wishes/${state.user.id}`)
           .then((response) => {
-            console.log('RESPOI',response)
             dispatch({
               type: SET_WISHES,
               value: { wishes: response.data }
@@ -139,6 +151,7 @@ export default function useApplicationData() {
       .catch(error => console.error(error));
   };
 
+  // remove an item from your wish list
   const removeWish = (id) => {
     return axios.post(`app/products/remove/${state.user.id}/${id}`)
       .then(() => {
@@ -165,6 +178,7 @@ export default function useApplicationData() {
       value: { category: setCategory, childCategories: [], childCategory: null, searchTerm: null }
     })
 
+    // fetch child categories if exist
     if(setCategory && state.categories.find(parent => parent.id === setCategory).has_children) {
       return axios.get(`api/categories?api_key=${process.env.REACT_APP_API_KEY}&parent_id=${category}&domain=amazon.com`)      
         .then((response) => {
@@ -177,7 +191,7 @@ export default function useApplicationData() {
     };
   };
 
-  // function to select child category
+  // function to select child category and fetch products for selected category
   const selectCategory = (category) => {
 
     dispatch({
@@ -208,6 +222,7 @@ export default function useApplicationData() {
     .catch(err => console.error(err.message));
   };
 
+  // set search term for nav search bar
   const setSearchTerm = (search) => {
     dispatch({
       type: SET_SEARCH,
@@ -215,6 +230,7 @@ export default function useApplicationData() {
     });
   };
 
+  // fetch products for the specified search parameters
   const setProductsBySearch = (term) => {
 
     dispatch({
@@ -222,6 +238,7 @@ export default function useApplicationData() {
       value: { products: [] }
     });
 
+    // search within a selected category if exist
     if (state.childCategory || state.category) {
       const currentCategory = state.childCategories ? state.childCategory : state.category;
 
@@ -246,6 +263,8 @@ export default function useApplicationData() {
       .catch(error => console.error(error));
     };
 
+    // do a broader search if no category has been selected
+
     const params = {
       api_key: process.env.REACT_APP_API_KEY,
       type: "search",
@@ -267,6 +286,7 @@ export default function useApplicationData() {
     .catch(error => console.error(error));
   }
 
+  // get reviews for specified product ASIN
   const getReviewsByAsin = (asin) => {
 
     dispatch({
@@ -298,6 +318,7 @@ export default function useApplicationData() {
     .catch(error => console.error(error));
   }
 
+  // search for products based on VISION AI result
   const getProductsByImageLabel = (label) => {
 
     dispatch({

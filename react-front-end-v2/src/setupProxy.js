@@ -6,7 +6,7 @@ const proxy = {
   pathRewrite: {
     '^/app' : '/'
   }
-}
+};
 
 const proxy2 = {
   target: 'https://api.rainforestapi.com/',
@@ -14,7 +14,7 @@ const proxy2 = {
   pathRewrite: {
     '^/api' : '/'
   }
-}
+};
 
 module.exports = (App) => {
 
